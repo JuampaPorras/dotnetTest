@@ -1,0 +1,22 @@
+﻿@model List<RowModel>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    <table class="table table-bordered">
+        @foreach (RowModel groupLetter in Model)
+        {
+            <tr>
+                @foreach(var letter in groupLetter.Letters)
+                {
+                    <td>@letter.Character
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+    <ul>
+        
+    </ul>
+</div>
