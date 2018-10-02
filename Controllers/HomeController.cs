@@ -145,16 +145,25 @@ namespace test.Controllers
             return stringRows;
         }
         private void SquareFinder(List<RowModel> stringRows,char[] charWord,int nextLetterIndex,int currentXPosition,int currentYPosition){
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition);
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition);
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition,currentYPosition+1);
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition,currentYPosition-1);
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition+1);
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition-1);
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition*1);
-            Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition-1);
+            if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition)){
+                if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition)){
+                    if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition)){
+                        if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition,currentYPosition+1)){
+                            if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition,currentYPosition-1)){
+                                if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition+1)){
+                                    if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition-1)){
+                                        if(!Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition*1)){
+                                            Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition-1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        private void Founder(List<RowModel> stringRows,char[] charWord,int nextLetterIndex,int currentXPosition,int currentYPosition){
+        private bool Founder(List<RowModel> stringRows,char[] charWord,int nextLetterIndex,int currentXPosition,int currentYPosition){
             var hitForTrue=false;
             var currentRow=stringRows.FirstOrDefault(x=>x.Row==currentYPosition);
             if(currentRow!=null){
@@ -169,9 +178,11 @@ namespace test.Controllers
                         else{
                             wordsSolved.Add(currentWordLettersPosition);
                         }
+                        return true;
                     }
                 }
             }
+            return false;
         }
         
     }
