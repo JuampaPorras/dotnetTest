@@ -10,8 +10,16 @@
             <tr>
                 @foreach(var letter in groupLetter.Letters)
                 {
-                    <td>@letter.Character
-                    </td>
+                    @if (letter.isDifferentColor)
+                    {
+                        <td style="color:red">@letter.Character
+                        </td>
+                    }
+                    else{
+                        <td>@letter.Character
+                        </td>
+                    }
+                    
                 }
             </tr>
         }

@@ -43,6 +43,8 @@ namespace test.Controllers
         // }
     //     return leftoverText;
     // }
+        private List<FoundLetter> currentWordLettersPosition { get; set; }
+        private List<List<FoundLetter>> wordsSolved { get; set; }
         public IActionResult Index()
         {
 //             var stringJava=new List<string>(){"<h1>some</h1>",
@@ -98,8 +100,8 @@ namespace test.Controllers
             {  
                 var currentLetter=new LetterPositionModel(){
                     Character=chartArray.ElementAt(column),
-                    Column=column+1,
-                    isDiferentColor=false
+                    Column=column,
+                    isDifferentColor=false
                 };
                 rowResult.Letters.Add(currentLetter);
             }
@@ -107,31 +109,69 @@ namespace test.Controllers
         }
 
         private List<RowModel> PuzzleSolver(List<RowModel> stringRows, List<string> words){
+            wordsSolved=new List<List<FoundLetter>>();
             foreach (string word in words)
             {
+                currentWordLettersPosition=new List<FoundLetter>();
                 var charWord=word.ToCharArray();
-                for (int charIndex = 0; charIndex < charWord.Count(); charIndex++)
+                var currentWordLetter=charWord.ElementAt(0);
+                for (int rowIndex = 0; rowIndex < stringRows.Count; rowIndex++)
                 {
-                   var currentWordLetter=charWord.ElementAt(charIndex);
-                   for (int rowIndex = 0; rowIndex < stringRows.Count; rowIndex++)
-                   {
-                       var currentRow=stringRows.ElementAt(rowIndex);
-                       for (int currentRowLetter = 0; currentRowLetter < currentRow.Letters.Count; currentRowLetter++)
-                       {
-                           var hitForTrue=currentWordLetter==currentRow.Letters.ElementAt(currentRowLetter).Character;
-                           if(hitForTrue){
+                    var currentRow=stringRows.ElementAt(rowIndex);
+                    for (int currentRowLetter = 0; currentRowLetter < currentRow.Letters.Count; currentRowLetter++)
+                    {
+                        var hitForTrue=currentWordLetter==currentRow.Letters.ElementAt(currentRowLetter).Character;
+                        if(hitForTrue){
+                            currentWordLettersPosition.Add(new FoundLetter(rowIndex,currentRowLetter));
+                            SquareFinder(stringRows,charWord,1,currentRowLetter,rowIndex);
+                            currentWordLettersPosition=new List<FoundLetter>();
+                        }
+                    }
+                    
+                }
+            }
+            var solvedStringRows=WordsPainter(stringRows);
+            return solvedStringRows;
+        }
 
-                           }
-                       }
-                       
-                   }
+        private List<RowModel> WordsPainter(List<RowModel> stringRows){
+            foreach (var wordFinded in wordsSolved)
+            {
+                foreach (var letter in wordFinded)
+                {  
+                    stringRows.FirstOrDefault(x=>x.Row==letter.Row).Letters.ElementAt(letter.Column).isDifferentColor=true;
                 }
             }
             return stringRows;
         }
-
-        private void SquareFinder(List<RowModel> stringRows,Char nextLetter,int currentXPosition,int currentYPosition,int lastPositionX,int lastPositionY){
-            
+        private void SquareFinder(List<RowModel> stringRows,char[] charWord,int nextLetterIndex,int currentXPosition,int currentYPosition){
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition);
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition);
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition,currentYPosition+1);
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition,currentYPosition-1);
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition+1);
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition+1,currentYPosition-1);
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition*1);
+            Founder(stringRows,charWord,nextLetterIndex,currentXPosition-1,currentYPosition-1);
+        }
+        private void Founder(List<RowModel> stringRows,char[] charWord,int nextLetterIndex,int currentXPosition,int currentYPosition){
+            var hitForTrue=false;
+            var currentRow=stringRows.FirstOrDefault(x=>x.Row==currentYPosition);
+            if(currentRow!=null){
+                var columnInRow=currentRow.Letters.FirstOrDefault(x=>x.Column==currentXPosition);
+                if(columnInRow!=null){
+                    hitForTrue=columnInRow.Character.CompareTo(charWord.ElementAt(nextLetterIndex))==0;
+                    if(hitForTrue){
+                        currentWordLettersPosition.Add(new FoundLetter(currentYPosition,currentXPosition));
+                        if(nextLetterIndex+1<charWord.Count()){
+                            SquareFinder(stringRows,charWord,nextLetterIndex+1,currentXPosition,currentYPosition);
+                        }
+                        else{
+                            wordsSolved.Add(currentWordLettersPosition);
+                        }
+                    }
+                }
+            }
         }
         
     }
